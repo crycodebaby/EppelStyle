@@ -2,62 +2,76 @@ name: Deploy to Server
 
 on:
   push:
-    branches: [main]
+    branches: [main] # Der Workflow wird bei jedem Push auf den main-Branch ausgelöst
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Führt den Job auf einem Ubuntu-Runner (GitHub Actions VM) aus
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Holt den Code aus deinem GitHub Repository
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4 # Installiert Node.js auf dem Runner
         with:
-          node-version: "20"
+          node-version: "20" # Verwendet Node.js Version 20
 
       - name: Install dependencies and build frontend
         run: |
-          cd frontend
-          npm install
-          npm run build
+          cd frontend # Wechselt in das 'frontend'-Verzeichnis deines Repositories
+          npm install # Installiert alle Abhängigkeiten für dein Frontend
+          npm run build # Führt den Build-Befehl aus (erstellt den 'dist' Ordner mit den statischen Dateien)
 
-      - name: Deploy to server (Prepare target directory)
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Prepare target directory on server
+        uses: appleboy/ssh-action@v1.0.3 # Stellt eine SSH-Verbindung zu deinem Homeserver her
+        with:
+          host: ${{ secrets.SERVER_IP }} # Die IP-Adresse (oder DynDNS-Domain) deines Servers, aus GitHub Secrets
+          username: ${{ secrets.SERVER_USER }} # Der Benutzername auf deinem Server (z.B. 'robin'), aus GitHub Secrets
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # Der private SSH-Schlüssel für die Authentifizierung, aus GitHub Secrets
+          script: |
+            # Navigiert zum Webroot-Verzeichnis auf deinem Homeserver
+            # Wichtig: Dieses Verzeichnis MUSS auf deinem Server existieren!
+            # Der || exit 1 sorgt dafür, dass der Workflow fehlschlägt, wenn das Verzeichnis nicht existiert
+            cd /var/www/vhosts/eppelstyle.de/html || { echo "Error: Target directory /var/www/vhosts/eppelstyle.de/html not found. Please create it on the server."; exit 1; }
+            # Löscht alle vorhandenen Dateien im Verzeichnis, um eine saubere Bereitstellung zu gewährleisten
+            rm -rf * # So stellst du sicher, dass keine alten Dateien übrig bleiben, die Probleme verursachen könnten
+            # Optional: Wenn du versteckte Dateien wie .git oder .github im Build-Ordner hast und diese nicht deployen willst
+            # rm -rf .[a-zA-Z0-9]* # NICHT verwenden, wenn der Build-Prozess wichtige Dot-Files erzeugt, die bleiben sollen!
+
+      - name: Copy build files to server
+        uses: appleboy/scp-action@v0.1.4 # Kopiert die gebuildeten Dateien über SCP auf deinen Server
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "frontend/dist/" # Quellpfad der gebauten Dateien (WICHTIG: Der Trailing Slash '/' kopiert den INHALT des 'dist'-Ordners)
+          target: "/var/www/vhosts/eppelstyle.de/html" # Zielverzeichnis auf deinem Server
+
+      - name: Set correct permissions for Nginx
+        uses: appleboy/ssh-action@v1.0.3 # Erneute SSH-Verbindung, um Dateiberechtigungen anzupassen
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Gehe in das ZIELVERZEICHNIS auf deinem Homeserver
-            cd /var/www/vhosts/eppelstyle.de/html
-            # Lösche alle alten Dateien im Verzeichnis, damit nur die neuen hochgeladen werden
-            rm -rf *
-            # Die anderen rm-Befehle, die vorher fehlschlugen, sollten jetzt nicht mehr auftreten,
-            # da das Skript im richtigen Verzeichnis ist und dort die nötigen Rechte hat.
-
-      - name: Copy build files to server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "frontend/dist/" # Kopiert den INHALT des dist-Ordners
-          target: "/var/www/vhosts/eppelstyle.de/html" # Zielverzeichnis auf dem Server
-
-      - name: Copy build files to server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "frontend/dist/"
-          target: "/var/www/vhosts/eppelstyle.de/html"
+            # Navigiert zum Webroot-Verzeichnis
+            cd /var/www/vhosts/eppelstyle.de/html || { echo "Error: Target directory /var/www/vhosts/eppelstyle.de/html not found for permissions setup."; exit 1; }
+            # Setzt den Besitzer der hochgeladenen Dateien und Verzeichnisse rekursiv auf robin:www-data
+            # 'robin' als primärer Benutzer und 'www-data' (Nginx-Gruppe) als Gruppe für Leserechte
+            sudo chown -R robin:www-data .
+            # Setzt die Berechtigungen:
+            # 755 für Verzeichnisse (rwx für Besitzer, rx für Gruppe/andere - Nginx kann hineingehen)
+            # 644 für Dateien (rw für Besitzer, r für Gruppe/andere - Nginx kann Dateien lesen)
+            # Dies ist entscheidend, damit der Nginx-Dienst (der als 'www-data' läuft) die Dateien ausliefern kann.
+            sudo find . -type d -exec chmod 755 {} \;
+            sudo find . -type f -exec chmod 644 {} \;
+            # Nginx neu laden, um sicherzustellen, dass es die neuen Dateien und deren Berechtigungen schnellstmöglich erkennt
+            sudo systemctl reload nginx
 
       - name: Purge Cloudflare Cache
         if: success() # Dieser Schritt wird nur ausgeführt, wenn alle vorherigen Schritte erfolgreich waren
-        uses: jakejarvis/cloudflare-purge-action@master
+        uses: jakejarvis/cloudflare-purge-action@master # Nutzt eine spezielle GitHub Action zum Leeren des Cloudflare Caches
         env:
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }} # Dein Cloudflare API Token aus den GitHub Secrets
+          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE_ID }} # Deine Cloudflare Zone ID aus den GitHub Secrets
