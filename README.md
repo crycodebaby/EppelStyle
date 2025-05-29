@@ -1,3 +1,1 @@
 # EppelStyle
-
-ssh-rsa

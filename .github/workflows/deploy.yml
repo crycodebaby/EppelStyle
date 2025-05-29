@@ -30,12 +30,12 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Gehe in das Zielverzeichnis auf deinem Homeserver
+            # Gehe in das ZIELVERZEICHNIS auf deinem Homeserver
             cd /var/www/vhosts/eppelstyle.de/html
-            # Lösche alle alten Dateien im Verzeichnis
+            # Lösche alle alten Dateien im Verzeichnis, damit nur die neuen hochgeladen werden
             rm -rf *
-            # Optional: Wenn du versteckte Dateien wie .git auch löschen willst
-            # rm -rf .[a-zA-Z0-9]* # Nur wenn nötig, löscht alles mit Punkt am Anfang
+            # Die anderen rm-Befehle, die vorher fehlschlugen, sollten jetzt nicht mehr auftreten,
+            # da das Skript im richtigen Verzeichnis ist und dort die nötigen Rechte hat.
 
       - name: Copy build files to server
         uses: appleboy/scp-action@v0.1.4
@@ -43,5 +43,5 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "frontend/dist/" # Wichtig: Der Schrägstrich am Ende kopiert den Inhalt des Ordners
-          target: "/var/www/vhosts/eppelstyle.de/html"
+          source: "frontend/dist/" # Kopiert den INHALT des dist-Ordners
+          target: "/var/www/vhosts/eppelstyle.de/html" # Zielverzeichnis auf dem Server
