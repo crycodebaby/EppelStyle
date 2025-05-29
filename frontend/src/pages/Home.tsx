@@ -666,7 +666,6 @@ const Home = () => {
             >
               alle unsere Google-Bewertungen
             </a>
-            !
           </motion.p>
         </motion.section>
       </div>
