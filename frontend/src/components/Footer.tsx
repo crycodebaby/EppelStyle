@@ -129,19 +129,23 @@ const Footer = () => {
               />
             </h3>
             <ul className="space-y-2.5">
-              {footerLinks.map((link, index) => (
-                <motion.li key={link.to} variants={itemVariants}>
-                  <Link
-                    to={link.to}
-                    className="relative text-sm transition-colors duration-300 sm:text-base font-body hover:text-accent-coral group"
-                  >
-                    {link.label}
-                    <span // Subtiler Unterstrich-Effekt für Links
-                      className="absolute left-0 bottom-0 block h-[1px] w-0 bg-accent-coral transition-all duration-300 group-hover:w-full"
-                    ></span>
-                  </Link>
-                </motion.li>
-              ))}
+              {footerLinks.map(
+                (
+                  link // 'index' komplett entfernt
+                ) => (
+                  <motion.li key={link.to} variants={itemVariants}>
+                    <Link
+                      to={link.to}
+                      className="relative text-sm transition-colors duration-300 sm:text-base font-body hover:text-accent-coral group"
+                    >
+                      {link.label}
+                      <span // Subtiler Unterstrich-Effekt für Links
+                        className="absolute left-0 bottom-0 block h-[1px] w-0 bg-accent-coral transition-all duration-300 group-hover:w-full"
+                      ></span>
+                    </Link>
+                  </motion.li>
+                )
+              )}
             </ul>
           </motion.div>
 
@@ -163,32 +167,36 @@ const Footer = () => {
               />
             </h3>
             <div className="flex items-center justify-center space-x-5 md:justify-end">
-              {socialLinks.map((social, index) => (
-                <motion.a
-                  key={social.href}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative transition-colors duration-300 group text-creme/80 hover:text-accent-coral"
-                  aria-label={social.label}
-                  variants={itemVariants}
-                  whileHover={{ y: -2, scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <svg
-                    className="w-6 h-6 fill-current sm:w-7 sm:h-7"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
+              {socialLinks.map(
+                (
+                  social // 'index' komplett entfernt
+                ) => (
+                  <motion.a
+                    key={social.href}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative transition-colors duration-300 group text-creme/80 hover:text-accent-coral"
+                    aria-label={social.label}
+                    variants={itemVariants}
+                    whileHover={{ y: -2, scale: 1.1 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <path d={social.path} />
-                  </svg>
-                  <span // Tooltip für Social Icons
-                    className="absolute hidden px-2 py-1 mb-2 text-xs transition-opacity duration-200 delay-100 transform -translate-x-1/2 rounded-md shadow-lg opacity-0 group-hover:opacity-100 bottom-full left-1/2 bg-accent-coral text-creme font-body whitespace-nowrap"
-                  >
-                    {social.label}
-                  </span>
-                </motion.a>
-              ))}
+                    <svg
+                      className="w-6 h-6 fill-current sm:w-7 sm:h-7"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d={social.path} />
+                    </svg>
+                    <span // Tooltip für Social Icons
+                      className="absolute hidden px-2 py-1 mb-2 text-xs transition-opacity duration-200 delay-100 transform -translate-x-1/2 rounded-md shadow-lg opacity-0 group-hover:opacity-100 bottom-full left-1/2 bg-accent-coral text-creme font-body whitespace-nowrap"
+                    >
+                      {social.label}
+                    </span>
+                  </motion.a>
+                )
+              )}
             </div>
             {/* Optional: Hinweis auf Öffnungszeiten */}
             <motion.p

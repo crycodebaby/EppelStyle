@@ -142,7 +142,6 @@ const Navbar = () => {
                         rest: { width: isActive ? "100%" : "0%" },
                       }}
                       whileHover="hover"
-                      initial="rest"
                     />
                   </>
                 )}

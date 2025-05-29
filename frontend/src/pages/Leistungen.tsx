@@ -274,79 +274,83 @@ const Leistungen = () => {
         </motion.div>
         {/* Leistungs-Sektionen (Herren, Damen) */}
         <div className="space-y-16 sm:space-y-20">
-          {Object.entries(services).map(([category, items], categoryIndex) => (
-            <motion.section
-              key={category}
-              className="max-w-5xl px-4 py-12 mx-auto shadow-xl sm:px-6 lg:px-8 section-wrapper-base sm:py-16 rounded-xl bg-creme" // Jede Kategorie in einer "Karte"
-              variants={sectionVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }} // Etwas früher triggern
-            >
-              {/* Optional: Bild für die Kategorie */}
-              {/* <motion.img 
+          {Object.entries(services).map(
+            (
+              [category, items] // 'categoryIndex' entfernt
+            ) => (
+              <motion.section
+                key={category}
+                className="max-w-5xl px-4 py-12 mx-auto shadow-xl sm:px-6 lg:px-8 section-wrapper-base sm:py-16 rounded-xl bg-creme" // Jede Kategorie in einer "Karte"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.15 }} // Etwas früher triggern
+              >
+                {/* Optional: Bild für die Kategorie */}
+                {/* <motion.img 
                 variants={itemVariants} 
                 src={`/images/eppelstyle_${category.toLowerCase()}.webp`} // z.B. eppelstyle_herren.webp
                 alt={`${category} bei EppelStyle`} 
                 className="object-cover w-full h-48 mb-6 rounded-t-lg sm:h-64 sm:mb-8" 
               /> */}
-              <motion.h3
-                variants={itemVariants}
-                className="mb-6 text-3xl font-semibold text-center sm:mb-8 sm:text-4xl text-heading-charcoal"
-              >
-                Für {category}
-              </motion.h3>
-              <motion.div
-                variants={itemVariants}
-                className="p-3 overflow-x-auto bg-white rounded-lg shadow-inner sm:p-5"
-              >
-                {" "}
-                {/* Leichter innerer Schatten für die Tabelle */}
-                <table className="w-full text-left border-collapse min-w-[500px]">
-                  <thead className="border-b-2 border-accent-coral/50">
-                    <tr>
-                      <th className="py-3.5 px-3 sm:px-4 text-base sm:text-lg font-semibold text-heading-charcoal">
-                        Dienstleistung
-                      </th>
-                      <th className="py-3.5 px-3 sm:px-4 text-base sm:text-lg font-semibold text-heading-charcoal text-center">
-                        Details / Haarlänge
-                      </th>
-                      <th className="py-3.5 px-3 sm:px-4 text-base sm:text-lg font-semibold text-heading-charcoal text-right">
-                        Preis
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((item, index) => (
-                      <motion.tr
-                        key={`${category}-${item.name}-${index}`}
-                        className="transition-colors duration-200 border-b border-coral-light/70 last:border-b-0 hover:bg-coral-light/40"
-                        custom={index} // Übergibt den Index an die Varianten für gestaffelte Animation
-                        variants={tableRowVariants}
-                        initial="hidden" // Wird durch parent (section) gesteuert
-                        animate="visible" // Wird durch parent (section) gesteuert
-                      >
-                        <td className="px-3 sm:px-4 py-3.5 text-sm sm:text-base text-charcoal font-body">
-                          {item.name}
-                        </td>
-                        <td className="relative px-3 sm:px-4 py-3.5 text-sm sm:text-base text-charcoal font-body text-center group">
-                          {item.length}
-                          {item.tooltip && (
-                            <span className="absolute z-20 hidden px-2.5 py-1.5 text-xs whitespace-nowrap transform -translate-x-1/2 rounded-md shadow-lg bottom-full left-1/2 group-hover:block bg-charcoal text-creme font-body">
-                              {item.tooltip}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-3 sm:px-4 py-3.5 text-sm sm:text-base text-charcoal font-body text-right font-medium">
-                          {item.price}
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
-              </motion.div>
-            </motion.section>
-          ))}
+                <motion.h3
+                  variants={itemVariants}
+                  className="mb-6 text-3xl font-semibold text-center sm:mb-8 sm:text-4xl text-heading-charcoal"
+                >
+                  Für {category}
+                </motion.h3>
+                <motion.div
+                  variants={itemVariants}
+                  className="p-3 overflow-x-auto bg-white rounded-lg shadow-inner sm:p-5"
+                >
+                  {" "}
+                  {/* Leichter innerer Schatten für die Tabelle */}
+                  <table className="w-full text-left border-collapse min-w-[500px]">
+                    <thead className="border-b-2 border-accent-coral/50">
+                      <tr>
+                        <th className="py-3.5 px-3 sm:px-4 text-base sm:text-lg font-semibold text-heading-charcoal">
+                          Dienstleistung
+                        </th>
+                        <th className="py-3.5 px-3 sm:px-4 text-base sm:text-lg font-semibold text-heading-charcoal text-center">
+                          Details / Haarlänge
+                        </th>
+                        <th className="py-3.5 px-3 sm:px-4 text-base sm:text-lg font-semibold text-heading-charcoal text-right">
+                          Preis
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {items.map((item, index) => (
+                        <motion.tr
+                          key={`${category}-${item.name}-${index}`}
+                          className="transition-colors duration-200 border-b border-coral-light/70 last:border-b-0 hover:bg-coral-light/40"
+                          custom={index} // Übergibt den Index an die Varianten für gestaffelte Animation
+                          variants={tableRowVariants}
+                          initial="hidden" // Wird durch parent (section) gesteuert
+                          animate="visible" // Wird durch parent (section) gesteuert
+                        >
+                          <td className="px-3 sm:px-4 py-3.5 text-sm sm:text-base text-charcoal font-body">
+                            {item.name}
+                          </td>
+                          <td className="relative px-3 sm:px-4 py-3.5 text-sm sm:text-base text-charcoal font-body text-center group">
+                            {item.length}
+                            {item.tooltip && (
+                              <span className="absolute z-20 hidden px-2.5 py-1.5 text-xs whitespace-nowrap transform -translate-x-1/2 rounded-md shadow-lg bottom-full left-1/2 group-hover:block bg-charcoal text-creme font-body">
+                                {item.tooltip}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-3 sm:px-4 py-3.5 text-sm sm:text-base text-charcoal font-body text-right font-medium">
+                            {item.price}
+                          </td>
+                        </motion.tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </motion.div>
+              </motion.section>
+            )
+          )}
         </div>
         {/* Abschließender Call to Action oder Hinweis */}
         <motion.div

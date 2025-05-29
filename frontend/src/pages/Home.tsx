@@ -1,12 +1,4 @@
 import { Helmet } from "react-helmet-async";
-interface HeroProps {
-  title: string;
-  subtitle: string;
-  image: string;
-  ctaText: string;
-  ctaLink: string;
-  logoSrc?: string;
-}
 import Hero from "../components/Hero";
 import AnimatedButton from "../components/AnimatedButton";
 import Button from "../components/Button";
