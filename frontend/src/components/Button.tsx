@@ -1,12 +1,20 @@
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode } from "react";
 import { motion } from "framer-motion";
+import type { MotionProps } from "framer-motion"; // Geändert: Type-only import
 
 interface ButtonProps {
   children: ReactNode;
-  onClick?: () => void;
+  onClick?: (
+    event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+  ) => void;
   className?: string;
   type?: "button" | "submit" | "reset";
   href?: string;
+  variant?: "primary" | "secondary" | "ghost";
+  ariaLabel?: string;
+  disabled?: boolean;
+  target?: string;
+  rel?: string;
 }
 
 const Button = ({
@@ -15,139 +23,65 @@ const Button = ({
   className = "",
   type = "button",
   href,
+  variant = "primary",
+  ariaLabel,
+  disabled = false,
+  target,
+  rel,
 }: ButtonProps) => {
-  const Component = href ? "a" : "button";
-  const props = href
-    ? { href, target: "_blank", rel: "noopener noreferrer" }
-    : { onClick, type };
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isLink = typeof href === "string";
+  const Component = isLink ? motion.a : motion.button;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const baseStyles =
+    "relative inline-flex items-center justify-center rounded-lg px-5 py-2.5 sm:px-6 sm:py-3 font-body text-base font-semibold tracking-normal transition-colors duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-coral focus-visible:ring-offset-2 focus-visible:ring-offset-creme group disabled:opacity-60 disabled:cursor-not-allowed";
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  const variantStyles = {
+    primary: `bg-accent-coral text-creme shadow-md ${disabled ? "" : "hover:brightness-110 hover:shadow-glow-coral"}`,
+    secondary: `bg-transparent text-accent-coral border-2 border-accent-coral ${disabled ? "" : "hover:bg-coral-light"}`,
+    ghost: `bg-transparent text-accent-coral ${disabled ? "" : "hover:bg-coral-light/50"}`,
+  };
 
-    canvas.width = 200;
-    canvas.height = 60;
+  const motionProps: MotionProps = {
+    initial: { opacity: 0, scale: 0.97 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { duration: 0.2, type: "spring", stiffness: 170, damping: 20 },
+    whileTap: disabled
+      ? {}
+      : {
+          scale: 0.95,
+          transition: { type: "spring", stiffness: 400, damping: 17 },
+        },
+    whileHover: disabled
+      ? {}
+      : {
+          scale: 1.02,
+          transition: { type: "spring", stiffness: 300, damping: 10 },
+        },
+  };
 
-    const particles: {
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-    }[] = [];
-    let isClicked = false;
-
-    const createParticles = () => {
-      if (!isClicked) return;
-      for (let i = 0; i < 15; i++) {
-        particles.push({
-          x: canvas.width / 2,
-          y: canvas.height / 2,
-          size: Math.random() * 3 + 1,
-          speedX: Math.random() * 4 - 2,
-          speedY: Math.random() * 4 - 2,
-        });
-      }
-      isClicked = false;
-    };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((particle, index) => {
-        particle.x += particle.speedX;
-        particle.y += particle.speedY;
-        particle.size *= 0.95;
-
-        if (particle.size < 0.1) {
-          particles.splice(index, 1);
-          return;
+  const elementProps:
+    | React.ButtonHTMLAttributes<HTMLButtonElement>
+    | React.AnchorHTMLAttributes<HTMLAnchorElement> = {
+    onClick,
+    className: `${baseStyles} ${variantStyles[variant]} ${className}`,
+    "aria-label":
+      ariaLabel || (typeof children === "string" ? children : "Button"),
+    ...(isLink
+      ? {
+          href,
+          target: target || (href!.startsWith("http") ? "_blank" : undefined),
+          rel:
+            rel ||
+            (href!.startsWith("http") ? "noopener noreferrer" : undefined),
         }
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = "#FF5757";
-        ctx.globalAlpha = particle.size / 3;
-        ctx.fill();
-      });
-
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    const handleClick = () => {
-      isClicked = true;
-      createParticles();
-    };
-
-    if (Component === "button") {
-      canvas.parentElement?.addEventListener("click", handleClick);
-    } else {
-      canvas.parentElement?.addEventListener("click", handleClick);
-    }
-
-    return () => {
-      canvas.parentElement?.removeEventListener("click", handleClick);
-    };
-  }, []);
+      : { type, disabled }),
+  };
 
   return (
-    <motion.div
-      className={`relative inline-block rounded-xl overflow-hidden group ${className}`}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.6, type: "spring", stiffness: 120 }}
-    >
-      <Component
-        {...props}
-        className="relative z-10 px-6 py-3 text-base font-bold sm:px-8 sm:py-4 bg-text text-accent font-heading sm:text-lg focus:outline-none focus:ring-2 focus:ring-secondary"
-      >
-        <motion.span
-          className="relative z-10"
-          whileHover={{ scale: 1.1 }}
-          transition={{ type: "spring", stiffness: 200 }}
-        >
-          {children}
-        </motion.span>
-        <svg
-          className="absolute inset-0 hand-drawn-button"
-          viewBox="0 0 200 60"
-          preserveAspectRatio="none"
-        >
-          <motion.path
-            d="M10 50 Q100 30 190 50"
-            fill="none"
-            stroke="#FF5757"
-            strokeWidth="2"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
-            animate={{ strokeDashoffset: [1000, 0] }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            className="group-hover:animate-drawIcon"
-          />
-        </svg>
-        <motion.span
-          className="absolute inset-0 bg-secondary/40 rounded-xl blur-md"
-          initial={{ opacity: 0 }}
-          whileHover={{ opacity: 0.7 }}
-          transition={{ duration: 0.3 }}
-        />
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 z-20 pointer-events-none"
-        />
-      </Component>
-      <motion.span
-        className="absolute inset-0 bg-secondary"
-        initial={{ scaleX: 0 }}
-        whileHover={{ scaleX: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-      />
-    </motion.div>
+    // @ts-expect-error Geändert: TypeScript kann bei der Kombination von MotionProps und HTML-Attributen manchmal pingelig sein, wenn Component dynamisch ist.
+    <Component {...elementProps} {...motionProps}>
+      <span className="relative z-10">{children}</span>
+    </Component>
   );
 };
 

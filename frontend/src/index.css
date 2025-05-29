@@ -4,37 +4,26 @@
 
 /* Globale Stile */
 body {
-  background: #f5f5f5; /* Helles Grauweiß */
-  color: #1a1a1a; /* Tiefschwarz */
-  font-family: "Open Sans", sans-serif;
+  @apply antialiased bg-creme text-charcoal font-body;
+  /* antialiased für weichere Schriftendarstellung */
+  scroll-behavior: smooth; /* Für sanftes Scrollen bei Ankerlinks */
 }
 
-/* Handgezeichnete Textur als Hintergrund */
-.background-texture {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800' opacity='0.05'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  pointer-events: none;
+/* Basis-Styling für Überschriften, wenn nicht per Klasse überschrieben */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-heading text-heading-charcoal;
 }
 
-/* Polka-Dot-Textur */
-.polka-dot {
-  background-image:
-    radial-gradient(circle, #ff5757 2px, transparent 2px),
-    radial-gradient(circle, #e31c1c 2px, transparent 2px);
-  background-size: 20px 20px;
-  background-position:
-    0 0,
-    10px 10px;
-  opacity: 0.1;
-}
-
-/* Animationen */
+/* Animationen - diese können bleiben, sind generisch */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -42,306 +31,71 @@ body {
   }
 }
 
-@keyframes organicFloat {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translate(10px, -15px) rotate(10deg);
-    opacity: 0.5;
-  }
+@keyframes pulse-subtle {
+  /* Subtiler Puls für kleine Akzente */
+  0%,
   100% {
-    transform: translate(0, 0) rotate(0deg);
-    opacity: 0.3;
-  }
-}
-
-@keyframes particleGlow {
-  0% {
     transform: scale(1);
-    opacity: 0.4;
-  }
-  50% {
-    transform: scale(1.3);
     opacity: 0.7;
   }
-  100% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
-}
-
-@keyframes handDrawnLine {
-  0% {
-    stroke-dashoffset: 1000;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes drawIcon {
-  0% {
-    stroke-dashoffset: 1000;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
   50% {
-    transform: scale(1.2);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.4;
+    transform: scale(1.03);
+    opacity: 0.9;
   }
 }
 
-@keyframes spark {
-  0% {
-    opacity: 0.8;
-    transform: scale(0.5) translate(0, 0);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(1) translate(10px, -10px);
-  }
-  100% {
+@keyframes slideIn {
+  from {
+    transform: translateX(20px);
     opacity: 0;
-    transform: scale(0.5) translate(20px, -20px);
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 
-@keyframes scissor {
-  0% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(45deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
-}
-
-@keyframes route {
-  0% {
+@keyframes drawLine {
+  from {
     stroke-dashoffset: 1000;
   }
-  100% {
+  to {
     stroke-dashoffset: 0;
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 1.2s ease-out forwards;
+/* Basisklasse für Sektions-Wrapper */
+.section-wrapper-base {
+  @apply relative px-4 py-16 mx-auto sm:px-6 lg:px-8 max-w-7xl sm:py-20 lg:py-24;
+  /* Erhöhtes Padding für mehr Luftigkeit */
 }
 
-.animate-drawIcon {
-  animation: drawIcon 2s ease-out forwards;
+/* Fokus-Styling - Wichtig für Accessibility */
+button:focus-visible, /* :focus-visible für bessere User Experience */
+a:focus-visible {
+  @apply outline-none ring-2 ring-accent-coral ring-offset-2 ring-offset-creme;
 }
 
-/* Partikel */
-.particle-background {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.bg-particle {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: #e31c1c; /* Knallrot */
-  border-radius: 50%;
-  animation: particleGlow 6s infinite ease-in-out;
-  opacity: 0.4;
-}
-
-.bg-particle-1 {
-  top: 10%;
-  left: 15%;
-  animation-delay: 0s;
-}
-.bg-particle-2 {
-  top: 25%;
-  left: 70%;
-  animation-delay: 1.5s;
-}
-.bg-particle-3 {
-  top: 50%;
-  left: 30%;
-  animation-delay: 3s;
-}
-.bg-particle-4 {
-  top: 75%;
-  left: 85%;
-  animation-delay: 4.5s;
-}
-
-/* Polka-Dot-Partikel */
-.polka-particle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: #e31c1c;
-  border-radius: 50%;
-  animation: pulse 2s infinite ease-in-out;
-}
-
-.polka-particle-1 {
-  top: 5%;
-  left: 10%;
-  animation-delay: 0s;
-}
-.polka-particle-2 {
-  top: 15%;
-  left: 85%;
-  animation-delay: 0.5s;
-}
-.polka-particle-3 {
-  bottom: 10%;
-  right: 15%;
-  animation-delay: 1s;
-}
-
-/* Funken bei Hover */
-.group:hover .spark {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: #e31c1c;
-  border-radius: 50%;
-  animation: spark 1s ease-out forwards;
-}
-
-.spark-1 {
-  top: 10%;
-  left: 10%;
-  animation-delay: 0s;
-}
-.spark-2 {
-  top: 20%;
-  left: 80%;
-  animation-delay: 0.2s;
-}
-.spark-3 {
-  bottom: 15%;
-  right: 15%;
-  animation-delay: 0.4s;
-}
-
-/* Organische Formen */
-.shape-background {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.shape {
-  position: absolute;
-  opacity: 0.3;
-  animation: organicFloat 12s infinite ease-in-out;
-}
-
-.shape-blob {
-  width: 100px;
-  height: 100px;
-  background: #fff8e1; /* Weiches Creme-Gelb */
-  border-radius: 50% 40% 60% 50% / 50% 60% 40% 50%;
-}
-
-.shape-blob-1 {
-  top: 15%;
-  left: 20%;
-  animation-delay: 0s;
-}
-.shape-blob-2 {
-  top: 60%;
-  left: 80%;
-  animation-delay: 3s;
-}
-.shape-blob-3 {
-  top: 40%;
-  left: 50%;
-  animation-delay: 6s;
-}
-
-/* Handgezeichnete Linie */
-.hand-drawn-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  stroke: #ff5757; /* Korallenrot */
-  stroke-width: 2;
-  fill: none;
+/* Handgezeichnete Linie - wird per Klasse in Home.tsx gefärbt */
+.hand-drawn-path {
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
-  animation: handDrawnLine 2s ease-out forwards;
+  animation: drawLine 2s 0.5s ease-out forwards; /* Kleine Verzögerung für besseren Effekt */
+  fill: none;
+  stroke-width: 2.5; /* Etwas dicker für bessere Sichtbarkeit */
 }
 
-/* Glassmorphism Sektion */
-.section-wrapper {
-  position: relative;
-  background: rgba(255, 248, 225, 0.9); /* Weiches Creme-Gelb, opaker */
-  border-radius: 1.5rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(12px);
+/* Scroll-Snap-Verhalten für den Haupt-Div in Home.tsx */
+.snap-container {
+  @apply overflow-x-hidden snap-y snap-mandatory;
 }
 
-/* Glassmorphism Karten */
-.bg-highlight {
-  background: rgba(255, 248, 225, 0.9); /* Weiches Creme-Gelb, opaker */
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(12px);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-.bg-highlight:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-}
-
-/* Logo-Anpassung */
-.logo {
-  filter: brightness(0) saturate(100%) hue-rotate(0deg); /* Korallenrot (#FF5757) */
-}
-
-.logo-dark-bg {
-  filter: brightness(100%) saturate(50%) hue-rotate(60deg)
-    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); /* Weiches Creme-Gelb (#FFF8E1) mit Schatten */
-}
-
-/* Tooltip Styling */
-.group:hover > span {
-  display: block;
-}
-
-/* Fokus-Styling */
-button:focus,
-a:focus {
-  outline: none;
-  ring: 2px solid #ff5757;
-}
-
-/* Textschatten für Überschriften */
-h2,
-h3 {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+/* Anpassungen für kleinere Bildschirme */
+@media (max-width: 640px) {
+  .section-wrapper-base {
+    @apply py-12 sm:py-16; /* Weniger Padding auf kleinen Bildschirmen */
+  }
+  h2 {
+    /* Beispiel: text-3xl sm:text-4xl in Komponenten ist oft besser als globale Regel */
+  }
 }

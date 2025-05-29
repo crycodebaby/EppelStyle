@@ -1,221 +1,191 @@
-import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 interface DecorativeIconProps {
   type: "scissors" | "comb" | "family" | "child";
-  className?: string;
+  className?: string; // Erwartet z.B. "text-accent-coral w-14 h-14"
 }
 
 const DecorativeIcon = ({ type, className = "" }: DecorativeIconProps) => {
-  const ref = useRef<SVGSVGElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          entries[0].target.classList.add("animate-drawIcon");
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
-  }, []);
-
   const iconVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
+    hidden: { opacity: 0, scale: 0.7, rotate: -10 },
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.6, type: "spring", stiffness: 100 },
+      rotate: 0,
+      transition: {
+        duration: 0.5,
+        type: "spring",
+        stiffness: 130,
+        damping: 12,
+      },
     },
   };
 
+  const strokeWidth = "5.5"; // Etwas angepasste Strichstärke für gute Sichtbarkeit
+
+  // Gemeinsame Props für Kind-Motion-Elemente, um Wiederholung zu vermeiden
+  const childMotionProps = (delayIncrement = 0) => ({
+    initial: {
+      opacity: 0,
+      pathLength: type === "scissors" || type === "comb" ? 0 : 1,
+    }, // pathLength nur für Linien relevant
+    animate: {
+      opacity: 1,
+      pathLength: 1,
+      transition: {
+        duration: 0.6,
+        delay: 0.2 + delayIncrement,
+        ease: "circOut",
+      },
+    },
+  });
+
   return (
     <motion.svg
-      ref={ref}
-      className={`decorative-icon ${className}`}
+      className={`decorative-icon ${className}`} // Farbe wird über text-* Klasse von außen gesetzt
       viewBox="0 0 100 100"
-      width="100"
-      height="100"
+      // width und height werden idealerweise durch Tailwind-Klassen (w-X, h-X) in className gesetzt
       variants={iconVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true }}
-      whileHover={{ scale: 1.1, rotate: 5 }}
-      transition={{ type: "spring", stiffness: 200 }}
+      viewport={{ once: true, amount: 0.4 }} // amount leicht erhöht
+      whileHover={{ scale: 1.12, rotate: 6 }}
+      transition={{ type: "spring", stiffness: 220, damping: 10 }} // Etwas direktere Feder
+      fill="none" // Standardmäßig kein Fill
+      stroke="currentColor" // Standard-Strichfarbe, wird von text-* Klasse beeinflusst
     >
-      {type === "scissors" ? (
+      {type === "scissors" && (
         <>
-          <path
-            d="M20 80 Q30 60 50 60 T80 80"
-            stroke="#F4A261"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          {/* Klingen */}
+          <motion.path
+            d="M28 72 L50 50 M50 50 L28 28" // Leicht angepasste Scherenform
+            strokeWidth={strokeWidth}
+            {...childMotionProps(0)}
           />
-          <path
-            d="M20 80 Q30 100 50 100 T80 80"
-            stroke="#F4A261"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          <motion.path
+            d="M72 72 L50 50 M50 50 L72 28" // Leicht angepasste Scherenform
+            strokeWidth={strokeWidth}
+            {...childMotionProps(0.1)} // Leichter Delay für die zweite Klinge
           />
-          <circle
-            cx="35"
-            cy="70"
-            r="10"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          {/* Griffe */}
+          <motion.circle
+            cx="22"
+            cy="80"
+            r="9"
+            strokeWidth={strokeWidth}
+            className="transition-colors stroke-accent-coral fill-creme group-hover:fill-coral-light"
+            {...childMotionProps(0.2)}
           />
-          <circle
-            cx="65"
-            cy="70"
-            r="10"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          <motion.circle
+            cx="78"
+            cy="80"
+            r="9"
+            strokeWidth={strokeWidth}
+            className="transition-colors stroke-accent-coral fill-creme group-hover:fill-coral-light"
+            {...childMotionProps(0.25)}
           />
         </>
-      ) : type === "comb" ? (
+      )}
+      {type === "comb" && (
         <>
-          <path
-            d="M30 20 H70"
-            stroke="#F4A261"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          {/* Rücken des Kamms */}
+          <motion.path
+            d="M15 75 H85"
+            strokeWidth={strokeWidth}
+            {...childMotionProps(0)}
           />
-          <path
-            d="M30 30 H70 M30 40 H70 M30 50 H70 M30 60 H70 M30 70 H70 M30 80 H70"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
-          />
+          {/* Zinken des Kamms - animiert von oben nach unten */}
+          {[20, 30, 40, 50, 60, 70, 80].map((xPos, i) => (
+            <motion.line
+              key={`tooth-${xPos}`}
+              x1={xPos}
+              y1="45"
+              x2={xPos}
+              y2="75" // Zinken zeigen nach unten vom Rücken
+              strokeWidth={strokeWidth}
+              initial={{ y1: 75, opacity: 0 }} // Starten unten und unsichtbar
+              animate={{
+                y1: 45,
+                opacity: 1,
+                transition: {
+                  duration: 0.3,
+                  delay: 0.3 + i * 0.04,
+                  ease: "easeOut",
+                },
+              }}
+            />
+          ))}
         </>
-      ) : type === "family" ? (
+      )}
+      {type === "family" && (
         <>
-          {/* Vater */}
-          <circle
-            cx="30"
-            cy="30"
-            r="15"
-            fill="#F4A261"
-            stroke="#4A7043"
-            strokeWidth="4"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          {/* Person 1 (Elternteil) */}
+          <motion.circle
+            cx="32"
+            cy="38"
+            r="11"
+            className="fill-accent-coral"
+            {...childMotionProps(0)}
           />
-          <path
-            d="M30 45 Q35 60 40 75"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          <motion.path
+            d="M32 49 Q32 65 23 80 M32 49 Q32 65 41 80"
+            className="stroke-charcoal"
+            strokeWidth={strokeWidth}
+            {...childMotionProps(0.05)}
           />
-          {/* Mutter */}
-          <circle
-            cx="70"
-            cy="30"
-            r="15"
-            fill="#F4A261"
-            stroke="#4A7043"
-            strokeWidth="4"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          {/* Person 2 (Elternteil) */}
+          <motion.circle
+            cx="68"
+            cy="38"
+            r="11"
+            className="fill-accent-coral"
+            {...childMotionProps(0.1)}
           />
-          <path
-            d="M70 45 Q75 60 80 75"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          <motion.path
+            d="M68 49 Q68 65 59 80 M68 49 Q68 65 77 80"
+            className="stroke-charcoal"
+            strokeWidth={strokeWidth}
+            {...childMotionProps(0.15)}
           />
-          {/* Kind */}
-          <circle
+          {/* Kind (kleiner, mittig vorne) */}
+          <motion.circle
             cx="50"
-            cy="50"
-            r="10"
-            fill="#F4A261"
-            stroke="#4A7043"
-            strokeWidth="4"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+            cy="58"
+            r="8"
+            className="fill-coral-light stroke-accent-coral"
+            strokeWidth="3.5"
+            {...childMotionProps(0.2)}
           />
-          <path
-            d="M50 60 Q52 70 55 80"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
-          />
-          {/* Lächeln */}
-          <path
-            d="M45 55 Q50 60 55 55"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          <motion.path
+            d="M50 66 Q50 76 46 85 M50 66 Q50 76 54 85"
+            className="stroke-charcoal"
+            strokeWidth={(parseFloat(strokeWidth) - 1).toString()}
+            {...childMotionProps(0.25)}
           />
         </>
-      ) : (
+      )}
+      {type === "child" && (
         <>
-          {/* Kind mit Haarschnitt */}
-          <circle
+          <motion.circle
             cx="50"
-            cy="30"
-            r="15"
-            fill="#F4A261"
-            stroke="#4A7043"
-            strokeWidth="4"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+            cy="35"
+            r="14"
+            className="fill-accent-coral"
+            {...childMotionProps(0)}
           />
-          <path
-            d="M50 45 Q55 60 60 75"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+          <motion.path
+            d="M50 49 Q50 68 42 82 M50 49 Q50 68 58 82"
+            className="stroke-charcoal"
+            strokeWidth={strokeWidth}
+            {...childMotionProps(0.05)}
           />
-          <path
-            d="M35 25 Q50 15 65 25"
-            stroke="#4A7043"
-            strokeWidth="4"
+          {/* Andeutung einer Kappe oder Haare */}
+          <motion.path
+            d="M38 28 Q50 18 62 28"
+            className="stroke-charcoal"
+            strokeWidth={strokeWidth}
             fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
-          />
-          <path
-            d="M45 35 Q50 40 55 35"
-            stroke="#4A7043"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray="1000"
-            strokeDashoffset="1000"
+            {...childMotionProps(0.1)}
           />
         </>
       )}
