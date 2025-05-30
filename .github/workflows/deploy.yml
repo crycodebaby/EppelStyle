@@ -36,8 +36,6 @@ jobs:
             cd /var/www/vhosts/eppelstyle.de/html || { echo "Error: Target directory /var/www/vhosts/eppelstyle.de/html not found. Please create it on the server."; exit 1; }
             # Löscht alle vorhandenen Dateien im Verzeichnis, um eine saubere Bereitstellung zu gewährleisten
             rm -rf * # So stellst du sicher, dass keine alten Dateien übrig bleiben, die Probleme verursachen könnten
-            # Optional: Wenn du versteckte Dateien wie .git oder .github im Build-Ordner hast und diese nicht deployen willst
-            # rm -rf .[a-zA-Z0-9]* # NICHT verwenden, wenn der Build-Prozess wichtige Dot-Files erzeugt, die bleiben sollen!
 
       - name: Copy build files to server
         uses: appleboy/scp-action@v0.1.4 # Kopiert die gebuildeten Dateien über SCP auf deinen Server
@@ -45,10 +43,10 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "frontend/dist/*" # Quellpfad der gebauten Dateien (WICHTIG: Das Sternchen '*' kopiert den INHALT des 'dist'-Ordners)
+          source: "frontend/dist/*" # Quellpfad der gebauten Dateien (Das Sternchen '*' kopiert den INHALT des 'dist'-Ordners)
           target: "/var/www/vhosts/eppelstyle.de/html" # Zielverzeichnis auf deinem Server
 
-      - name: Set correct permissions for Nginx
+      - name: Set correct permissions for Nginx and Reload
         uses: appleboy/ssh-action@v1.0.3 # Erneute SSH-Verbindung, um Dateiberechtigungen anzupassen
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -58,22 +56,23 @@ jobs:
             # Navigiert zum Webroot-Verzeichnis
             cd /var/www/vhosts/eppelstyle.de/html || { echo "Error: Target directory /var/www/vhosts/eppelstyle.de/html not found for permissions setup."; exit 1; }
             # Setzt den Besitzer der hochgeladenen Dateien und Verzeichnisse rekursiv auf robin:www-data
-            # 'robin' als primärer Benutzer und 'www-data' (Nginx-Gruppe) als Gruppe für Leserechte
             sudo chown -R robin:www-data .
-            # Setzt die Berechtigungen:
-            # 755 für Verzeichnisse (rwx für Besitzer, rx für Gruppe/andere - Nginx kann hineingehen)
-            # 644 für Dateien (rw für Besitzer, r für Gruppe/andere - Nginx kann Dateien lesen)
-            # Dies ist entscheidend, damit der Nginx-Dienst (der als 'www-data' läuft) die Dateien ausliefern kann.
+            # Setzt die Berechtigungen: 755 für Verzeichnisse, 644 für Dateien
             sudo find . -type d -exec chmod 755 {} \;
             sudo find . -type f -exec chmod 644 {} \;
             # Nginx neu laden, um sicherzustellen, dass es die neuen Dateien und deren Berechtigungen schnellstmöglich erkennt
             sudo systemctl reload nginx
 
-      - name: Purge Cloudflare Cache
+      - name: Purge Cloudflare Cache (using curl)
         if: success() # Dieser Schritt wird nur ausgeführt, wenn alle vorherigen Schritte erfolgreich waren
-        uses: jakejarvis/cloudflare-purge-action@master # Nutzt eine spezielle GitHub Action zum Leeren des Cloudflare Caches
-        with: # <-- WICHTIG: Hier kommt die purge_everything Option rein!
-          purge_everything: true
-        env:
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }} # Dein Cloudflare API Token aus den GitHub Secrets
-          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE_ID }} # Deine Cloudflare Zone ID aus den GitHub Secrets
+        uses: appleboy/ssh-action@v1.0.3 # Nutzen wir erneut die SSH-Action für den Curl-Befehl
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Führt den Curl-Befehl aus, um den Cloudflare-Cache zu leeren
+            curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
