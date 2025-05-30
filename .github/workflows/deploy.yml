@@ -45,7 +45,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "frontend/dist/" # Quellpfad der gebauten Dateien (WICHTIG: Der Trailing Slash '/' kopiert den INHALT des 'dist'-Ordners)
+          source: "frontend/dist/*" # Quellpfad der gebauten Dateien (WICHTIG: Das Sternchen '*' kopiert den INHALT des 'dist'-Ordners)
           target: "/var/www/vhosts/eppelstyle.de/html" # Zielverzeichnis auf deinem Server
 
       - name: Set correct permissions for Nginx
