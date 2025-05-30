@@ -72,6 +72,8 @@ jobs:
       - name: Purge Cloudflare Cache
         if: success() # Dieser Schritt wird nur ausgeführt, wenn alle vorherigen Schritte erfolgreich waren
         uses: jakejarvis/cloudflare-purge-action@master # Nutzt eine spezielle GitHub Action zum Leeren des Cloudflare Caches
+        with: # <-- WICHTIG: Hier kommt die purge_everything Option rein!
+          purge_everything: true
         env:
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }} # Dein Cloudflare API Token aus den GitHub Secrets
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE_ID }} # Deine Cloudflare Zone ID aus den GitHub Secrets
