@@ -2,245 +2,243 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Footer = () => {
-  const sectionVariants = {
-    // Umbenannt von linkVariants für Klarheit
+  const footerSectionVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut", staggerChildren: 0.1 },
+      transition: { duration: 0.7, ease: "easeOut", staggerChildren: 0.15 },
     },
   };
 
   const itemVariants = {
-    // Für einzelne Listenelemente oder Absätze
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
   };
 
-  const socialLinks = [
-    {
-      href: "https://www.instagram.com/eppel_style/", // Dein Instagram Link
-      label: "Instagram",
-      path: "M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.326 3.608 1.301.975.975 1.24 2.242 1.301 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.326 2.633-1.301 3.608-.975.975-2.242 1.24-3.608 1.301-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.326-3.608-1.301-.975-.975-1.24-2.242-1.301-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.326-2.633 1.301-3.608.975.975 2.242-1.24 3.608-1.301 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-1.547.07-2.928.398-4.014 1.484S1.625 3.977 1.555 5.524C1.497 6.804 1.483 7.212 1.483 12s.014 5.196.072 6.476c.07 1.547.398 2.928 1.484 4.014s2.477 1.414 4.014 1.484c1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.547-.07 2.928-.398 4.014-1.484s1.414-2.477 1.484-4.014c.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.07-1.547-.398-2.928-1.484-4.014s-2.477-1.414-4.014-1.484c-1.28-.058-1.688-.072-4.947-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.441s.645 1.441 1.441 1.441 1.441-.645 1.441-1.441-.645-1.441-1.441-1.441z",
-    },
-    // { // Beispiel für Facebook, falls du es hinzufügen möchtest
-    //   href: "https://facebook.com/eppelstyle",
-    //   label: "Facebook",
-    //   path: "M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z",
-    // },
-  ];
+  const smairysTextVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: (delay: number = 0) => ({
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, delay, ease: [0.25, 0.1, 0.25, 1] },
+    }),
+  };
 
-  const footerLinks = [
-    { to: "/kontakt", label: "Kontakt & Anfahrt" },
+  const eppelStylePhoneNumber = "+4968815951818";
+  const eppelStyleEmailAddress = "info@eppelstyle.de";
+  const eppelStyleInstagramLink = "https://www.instagram.com/eppel_style/";
+
+  const footerNavLinks = [
+    { to: "/kontakt", label: "Kontakt" },
     { to: "/impressum", label: "Impressum" },
     { to: "/datenschutz", label: "Datenschutz" },
   ];
 
+  const smairysMotto = "Wir weben digitale Präsenz, die begeistert.";
+
   return (
     <motion.footer
-      className="relative pt-10 pb-8 mt-16 sm:pt-12 sm:pb-10 bg-charcoal text-creme/90" // Dunkler Footer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1, ease: "easeOut" }}
+      className="bg-charcoal text-creme/80"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.05 }}
+      variants={footerSectionVariants}
     >
-      {/* Dekorative Linie oben */}
-      <motion.div
-        className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent-coral to-transparent opacity-80"
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-      />
-
-      <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
-        <div className="grid grid-cols-1 gap-10 sm:gap-12 md:grid-cols-3">
-          {/* Kontaktdaten */}
+      {/* Oberer Teil: EppelStyle Informationen */}
+      <div className="px-4 py-10 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3 sm:gap-12">
+          {/* EppelStyle Kontaktdaten */}
           <motion.div
+            variants={itemVariants}
             className="text-center sm:text-left"
-            variants={sectionVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
           >
-            <h3 className="relative inline-block mb-5 text-xl font-semibold font-heading text-creme">
-              EppelStyle Friseur
-              <motion.span // Unterstrich
-                className="absolute left-0 -bottom-1.5 h-[2px] w-full bg-accent-coral"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-              />
+            <h3 className="mb-4 text-lg font-semibold tracking-wider uppercase font-heading text-creme">
+              EppelStyle
             </h3>
-            <motion.p
-              variants={itemVariants}
-              className="mb-2 text-sm sm:text-base font-body"
-            >
-              Kirchplatz 11
-              <br />
-              66571 Eppelborn, Saarland
-            </motion.p>
-            <motion.p
-              variants={itemVariants}
-              className="mb-2 text-sm sm:text-base font-body"
-            >
-              Telefon:{" "}
-              <a
-                href="tel:+4968815951818" // Korrekte Nummer
-                className="transition-colors duration-300 hover:text-accent-coral"
-              >
-                06881 5951818
-              </a>
-            </motion.p>
-            <motion.p
-              variants={itemVariants}
-              className="text-sm sm:text-base font-body"
-            >
-              E-Mail:{" "}
-              <a
-                href="mailto:info@eppelstyle.de" // Korrekte Mail
-                className="transition-colors duration-300 hover:text-accent-coral"
-              >
-                info@eppelstyle.de
-              </a>
-            </motion.p>
-            <motion.img
-              variants={itemVariants}
-              src="/images/logo/Friseurlogo-Barber-Saarland_weiss_transparent.png" // Weißes Logo für dunklen Hintergrund
-              alt="EppelStyle Logo Weiß"
-              className="h-16 mx-auto mt-6 sm:mx-0 opacity-80"
-            />
+            <address className="space-y-1 text-sm not-italic sm:text-base font-body">
+              <p>Kirchplatz 11</p>
+              <p>66571 Eppelborn, Saarland</p>
+              <p className="mt-2">
+                Tel:{" "}
+                <a
+                  href={`tel:${eppelStylePhoneNumber}`}
+                  className="transition-colors hover:text-accent-coral"
+                >
+                  {eppelStylePhoneNumber.replace("+49", "0")}
+                </a>
+              </p>
+              <p>
+                Mail:{" "}
+                <a
+                  href={`mailto:${eppelStyleEmailAddress}`}
+                  className="transition-colors hover:text-accent-coral"
+                >
+                  {eppelStyleEmailAddress}
+                </a>
+              </p>
+            </address>
           </motion.div>
 
-          {/* Nützliche Links */}
+          {/* Nützliche Links für EppelStyle */}
           <motion.div
-            className="text-center"
-            variants={sectionVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
+            variants={itemVariants}
+            className="text-center sm:text-left"
           >
-            <h3 className="relative inline-block mb-5 text-xl font-semibold font-heading text-creme">
+            <h3 className="mb-4 text-lg font-semibold tracking-wider uppercase font-heading text-creme">
               Informationen
-              <motion.span
-                className="absolute left-0 -bottom-1.5 h-[2px] w-full bg-accent-coral"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
-              />
             </h3>
-            <ul className="space-y-2.5">
-              {footerLinks.map(
-                (
-                  link // 'index' komplett entfernt
-                ) => (
-                  <motion.li key={link.to} variants={itemVariants}>
-                    <Link
-                      to={link.to}
-                      className="relative text-sm transition-colors duration-300 sm:text-base font-body hover:text-accent-coral group"
-                    >
-                      {link.label}
-                      <span // Subtiler Unterstrich-Effekt für Links
-                        className="absolute left-0 bottom-0 block h-[1px] w-0 bg-accent-coral transition-all duration-300 group-hover:w-full"
-                      ></span>
-                    </Link>
-                  </motion.li>
-                )
-              )}
+            <ul className="space-y-2">
+              {footerNavLinks.map((link) => (
+                <li key={link.to}>
+                  <Link
+                    to={link.to}
+                    className="text-sm transition-colors duration-300 sm:text-base font-body hover:text-accent-coral"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </motion.div>
 
-          {/* Social Media */}
+          {/* Social Media für EppelStyle */}
           <motion.div
-            className="text-center md:text-right"
-            variants={sectionVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
+            variants={itemVariants}
+            className="text-center sm:text-left md:text-right"
           >
-            <h3 className="relative inline-block mb-5 text-xl font-semibold font-heading text-creme">
-              Folgen Sie uns
-              <motion.span
-                className="absolute left-0 -bottom-1.5 h-[2px] w-full bg-accent-coral"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
-              />
+            <h3 className="mb-4 text-lg font-semibold tracking-wider uppercase font-heading text-creme">
+              Folgen Sie EppelStyle
             </h3>
-            <div className="flex items-center justify-center space-x-5 md:justify-end">
-              {socialLinks.map(
-                (
-                  social // 'index' komplett entfernt
-                ) => (
-                  <motion.a
-                    key={social.href}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative transition-colors duration-300 group text-creme/80 hover:text-accent-coral"
-                    aria-label={social.label}
-                    variants={itemVariants}
-                    whileHover={{ y: -2, scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <svg
-                      className="w-6 h-6 fill-current sm:w-7 sm:h-7"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d={social.path} />
-                    </svg>
-                    <span // Tooltip für Social Icons
-                      className="absolute hidden px-2 py-1 mb-2 text-xs transition-opacity duration-200 delay-100 transform -translate-x-1/2 rounded-md shadow-lg opacity-0 group-hover:opacity-100 bottom-full left-1/2 bg-accent-coral text-creme font-body whitespace-nowrap"
-                    >
-                      {social.label}
-                    </span>
-                  </motion.a>
-                )
-              )}
+            <div className="flex justify-center space-x-4 md:justify-end">
+              <a
+                href={eppelStyleInstagramLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="EppelStyle auf Instagram"
+                className="transition-colors duration-300 text-creme/70 hover:text-accent-coral"
+              >
+                <motion.svg
+                  className="w-6 h-6 fill-current"
+                  viewBox="0 0 24 24"
+                  whileHover={{ scale: 1.1, rotate: 3 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.326 3.608 1.301.975.975 1.24 2.242 1.301 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.326 2.633-1.301 3.608-.975.975-2.242 1.24-3.608 1.301-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.326-3.608-1.301-.975-.975-1.24-2.242-1.301-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.326-2.633 1.301-3.608.975.975 2.242 1.24 3.608 1.301C7.15 2.225 7.53 2.163 12 2.163m0-2.163C8.74.001 8.333.015 7.053.072c-1.547.07-2.928.398-4.014 1.484S1.625 3.977 1.555 5.524C1.497 6.804 1.483 7.212 1.483 12s.014 5.196.072 6.476c.07 1.547.398 2.928 1.484 4.014s2.477 1.414 4.014 1.484c1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.547-.07 2.928-.398 4.014-1.484s1.414-2.477 1.484-4.014c.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.07-1.547-.398-2.928-1.484-4.014S16.023.072 14.476.001C13.196.015 12.788 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 11-2.881.001 1.44 1.44 0 012.881-.001z" />
+                </motion.svg>
+              </a>
             </div>
-            {/* Optional: Hinweis auf Öffnungszeiten */}
-            <motion.p
-              variants={itemVariants}
-              className="mt-6 text-sm text-center text-creme/70 md:text-right font-body"
-            >
-              Mo – Sa: 09:00 – 19:00 Uhr
-            </motion.p>
           </motion.div>
-        </div>
-
-        {/* Copyright Bereich */}
-        <motion.div
-          className="pt-8 mt-10 text-center border-t sm:pt-10 sm:mt-12 border-creme/20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-        >
-          {/* Smairys Netz-Manufaktur Logo bleibt hier, da es im Original-Code war */}
-          <img
-            src="/images/logo/copyright-logo.png" // Pfad zu deinem Copyright-Logo
-            alt="Smairys Netz-Manufaktur Logo"
-            className="h-12 mx-auto mb-3 opacity-70 sm:h-14" // Größe angepasst
-          />
-          <p className="text-sm text-creme/70 font-body">
-            Copyright © {new Date().getFullYear()} Smairys Netz-Manufaktur.
-            Alle Rechte vorbehalten.
-          </p>
-          <p className="mt-1 text-xs text-creme/50 font-body">
-            Designed & Built with{" "}
-            <span className="inline-block text-accent-coral animate-pulse-subtle">
-              💖
-            </span>{" "}
-            by Smairys Netz-Manufaktur
-          </p>
-        </motion.div>
+        </div>{" "}
+        {/* Schließt grid */}
+      </div>{" "}
+      {/* Schließt EppelStyle Info-Container */}
+      {/* Trennlinie */}
+      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <motion.hr
+          className="my-8 border-t-2 border-accent-coral/30 sm:my-10"
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />{" "}
+        {/* motion.hr ist selbstschließend */}
       </div>
-      {/* Dekorative Linie unten */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent-coral to-transparent opacity-80"
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-      />
+      {/* Unterer Teil: Smairys Netz-Manufaktur Branding */}
+      <motion.div className="relative pt-10 pb-12 overflow-hidden bg-neutral-950 sm:pt-12 sm:pb-16">
+        <motion.div
+          className="absolute inset-0 opacity-[0.02] pointer-events-none"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ff7f50' fill-opacity='0.4'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6zM24 20c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6zM42 6c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+          }}
+          animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+          transition={{
+            duration: 40,
+            ease: "linear",
+            repeat: Infinity,
+            repeatType: "mirror",
+          }}
+        ></motion.div>{" "}
+        {/* Explizit geschlossen */}
+        <div className="relative z-10 px-4 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center">
+            <motion.img
+              src="/images/logo/copyright-logo.png"
+              alt="Smairys Netz-Manufaktur Logo"
+              className="h-20 mb-6 sm:h-24 md:h-28 lg:h-32"
+              initial={{ opacity: 0, y: 20, scale: 0.8 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.1,
+                type: "spring",
+                stiffness: 80,
+                damping: 15,
+              }}
+              whileHover={{
+                scale: 1.08,
+                filter: "drop-shadow(0 0 12px rgba(255,127,80,0.6))",
+              }}
+              animate={{
+                scale: [1, 1.02, 1],
+                transition: {
+                  duration: 3,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatDelay: 1,
+                },
+              }}
+            />{" "}
+            {/* motion.img ist selbstschließend */}
+            <motion.h2
+              className="text-2xl font-bold sm:text-3xl md:text-4xl lg:text-5xl font-heading text-creme"
+              variants={smairysTextVariants}
+              custom={0.3}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+            >
+              Smairys Netz-Manufaktur
+            </motion.h2>
+            <motion.p
+              className="mt-2 text-base italic sm:text-lg md:text-xl text-coral-light/90 font-body"
+              variants={smairysTextVariants}
+              custom={0.5}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+            >
+              "{smairysMotto}"
+            </motion.p>
+            <motion.p
+              className="mt-8 text-xs text-creme/60 font-body"
+              variants={smairysTextVariants}
+              custom={0.7}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+            >
+              Eine Webseite, handgefertigt mit{" "}
+              <span className="inline-block text-accent-coral animate-pulse-subtle">
+                ♥
+              </span>{" "}
+              von Smairys Netz-Manufaktur
+              <br />
+              Copyright © {new Date().getFullYear()} Smairys Netz-Manufaktur.
+              Alle Rechte vorbehalten.
+            </motion.p>
+          </div>{" "}
+          {/* Schließt flex flex-col items-center */}
+        </div>{" "}
+        {/* Schließt relative z-10 ... */}
+      </motion.div>{" "}
+      {/* Schließt Smairys Branding Container */}
     </motion.footer>
   );
 };
