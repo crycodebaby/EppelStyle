@@ -31,11 +31,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }} # Der private SSH-Schlüssel für die Authentifizierung, aus GitHub Secrets
           script: |
             # Navigiert zum Webroot-Verzeichnis auf deinem Homeserver
-            # Wichtig: Dieses Verzeichnis MUSS auf deinem Server existieren!
-            # Der || exit 1 sorgt dafür, dass der Workflow fehlschlägt, wenn das Verzeichnis nicht existiert
             cd /var/www/vhosts/eppelstyle.de/html || { echo "Error: Target directory /var/www/vhosts/eppelstyle.de/html not found. Please create it on the server."; exit 1; }
-            # Löscht alle vorhandenen Dateien im Verzeichnis, um eine saubere Bereitstellung zu gewährleisten
-            rm -rf * # So stellst du sicher, dass keine alten Dateien übrig bleiben, die Probleme verursachen könnten
+            # Löscht alle vorhandenen Dateien und Unterordner im Webroot (WICHTIG!)
+            sudo rm -rf * # So stellst du sicher, dass keine alten Dateien oder der 'frontend'-Ordner übrig bleiben
+            # Optional: Wenn du versteckte Dateien wie .git oder .github im Build-Ordner hast
+            # sudo rm -rf .[a-zA-Z0-9]*
 
       - name: Copy build files to server
         uses: appleboy/scp-action@v0.1.4 # Kopiert die gebuildeten Dateien über SCP auf deinen Server
@@ -43,8 +43,11 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "frontend/dist/*" # Quellpfad der gebauten Dateien (Das Sternchen '*' kopiert den INHALT des 'dist'-Ordners)
+          source: "frontend/dist/" # Quellpfad des 'dist'-Ordners
           target: "/var/www/vhosts/eppelstyle.de/html" # Zielverzeichnis auf deinem Server
+          # WICHTIG: Füge strip_components hinzu, um den 'frontend/dist' Teil des Pfades zu entfernen
+          # Dies stellt sicher, dass der INHALT von dist direkt in das Zielverzeichnis kopiert wird
+          strip_components: 2 # Entfernt 'frontend/' und 'dist/' von der Quelle
 
       - name: Set correct permissions for Nginx and Reload
         uses: appleboy/ssh-action@v1.0.3 # Erneute SSH-Verbindung, um Dateiberechtigungen anzupassen
