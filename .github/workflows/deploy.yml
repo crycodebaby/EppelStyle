@@ -18,25 +18,27 @@ jobs:
           npm install
           npm run build
 
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+
       - name: Deploy built files to server with rsync
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SERVER_IP }}
+          # WICHTIGE ÄNDERUNG: Wir benutzen die Tailscale-IP deines Servers!
+          host: 100.98.192.86
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # rsync ist sicherer und effizienter als rm+scp
-            # -a: Archivmodus (erhält Rechte, etc.)
-            # -v: Verbose (zeigt, was es tut)
-            # -z: Komprimiert die Daten beim Übertragen
-            # --delete: Löscht Dateien im Ziel, die in der Quelle nicht mehr existieren
             rsync -avz --delete frontend/dist/ /docker/sites/eppelstyle.de/www/
 
       - name: Purge Cloudflare Cache
         if: success()
+        # Läuft ebenfalls über die sichere Tailscale-Verbindung
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SERVER_IP }}
+          host: 100.98.192.86
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
