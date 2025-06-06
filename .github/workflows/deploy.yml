@@ -23,22 +23,21 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
 
-      - name: Deploy built files to server with rsync
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Deploy to Server via rsync
+        uses: easingthemes/ssh-deploy@v5.1.0
         with:
-          # WICHTIGE ÄNDERUNG: Wir benutzen die Tailscale-IP deines Servers!
-          host: 100.98.192.86
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            rsync -avz --delete frontend/dist/ /docker/sites/eppelstyle.de/www/
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-avz --delete"
+          SOURCE: "frontend/dist/"
+          REMOTE_HOST: "100.98.192.86"
+          REMOTE_USER: ${{ secrets.SERVER_USER }}
+          TARGET: "/docker/sites/eppelstyle.de/www/"
 
       - name: Purge Cloudflare Cache
         if: success()
-        # Läuft ebenfalls über die sichere Tailscale-Verbindung
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 100.98.192.86
+          host: "100.98.192.86"
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
